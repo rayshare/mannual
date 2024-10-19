@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "AutoTrading",
+    "description": "AutoTrading",
+    "version": "1.0",
+    "action": {
+        "default_popup": "page/config.html"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "scripts/base.js",
+                "scripts/data.js",
+                "scripts/gesture.js",
+                "scripts/private.js",
+                "scripts/strategyV1.js",
+                "scripts/main.js"
+            ],
+            "matches": [
+                "*://www.okx.com/*/trade-swap/doge-usdt-swap"
+            ],
+            "run_at": "document_idle",
+            "world": "MAIN",
+            "type": "module"
+        }
+    ]
+}
