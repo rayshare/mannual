@@ -1,17 +1,22 @@
 (function () {
     let document = this.document;
+    let C_KD = [];
+    let C_MA = [];
+    let C_VOL = [];
+    let DATA0 = NaN;
     queryDatasourceElement(document, (el_KD, el_MA, el_VOL) => {
         let datasource = new DataSource(el_KD, el_MA, el_VOL);
         this.datasource = datasource;
         datasource.addListener({
             kd: function (KD) {
-                //console.log(KD);
+                C_KD = KD;
+                
             },
             ma: function (MA) {
-                // console.log(MA);
+                C_MA = MA;
             },
             vol: function (VOL) {
-                // console.log(VOL);
+                C_VOL = VOL;
             },
         });
     });
@@ -21,11 +26,11 @@
         this.private = private;
         private.addListener({
             data: function (data) {
-                // console.log(data);
+                DATA0 = data[0];
             }
         });
     });
 
-    this.g = new Gesture();
+    this.g = new FullGesture();
 })();
 
