@@ -1,7 +1,3 @@
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));;
-}
-
 /**
  * 监听元素
  * @param phase 阶段
@@ -47,7 +43,7 @@ async function process(phase, container, targetMethod, callback) {
                 observer.disconnect();
                 resolve(targetElement);
             } else {
-                console.log("Not Found: " + phase);
+                console.warn("Not Found: " + phase);
             }
         });
         observer.observe(element, { childList: true, attributes: true, subtree: true });
@@ -65,20 +61,6 @@ class Gesture {
         }
         inputElement.dispatchEvent(event);
     }
-
-    click(element) {
-        element.click();
-    }
-
-}
-
-const SLEEP_SHORT = 200;
-let flag = true;
-
-function pause(msg) {
-    console.error(msg);
-    alert(msg);
-    flag = false;
 }
 
 class FullGesture extends Gesture {
