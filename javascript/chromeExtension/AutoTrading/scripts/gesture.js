@@ -2,6 +2,58 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));;
 }
 
+/**
+ * 监听元素
+ * @param phase 阶段
+ * @param container 元素或promise
+ * @param targetMethod 目标元素获取方法
+ * @param callback 回调函数
+ * @returns promise | callback's promise
+ */
+async function process(phase, container, targetMethod, callback) {
+    let element = container;
+    if (Promise.prototype.isPrototypeOf(container)) {
+        await container.then(result => element = result);
+    } else if (container.nodeType) {
+        element = container;
+    } else {
+        console.error("Error element: " + phase);
+        return;
+    }
+    let targetElement = targetMethod(element);
+    if (targetElement) {
+        if (callback) {
+            let result = callback(targetElement);
+            if (Promise.prototype.isPrototypeOf(result)) {
+                return result;
+            }
+        }
+        return new Promise((resolve, reject) => {
+            resolve(targetElement);
+        });
+    }
+    return new Promise((resolve, reject) => {
+        let observer = new MutationObserver((mutationList, observer) => {
+            targetElement = targetMethod(element);
+            if (targetElement) {
+                if (callback) {
+                    let result = callback(targetElement);
+                    if (Promise.prototype.isPrototypeOf(result)) {
+                        observer.disconnect();
+                        result.then(e => resolve(e));
+                        return;
+                    }
+                }
+                observer.disconnect();
+                resolve(targetElement);
+            } else {
+                console.log("Not Found: " + phase);
+            }
+        });
+        observer.observe(element, { childList: true, attributes: true, subtree: true });
+    });
+}
+
 class Gesture {
     input(inputElement, newValue) {
         let oldValue = inputElement.value;
