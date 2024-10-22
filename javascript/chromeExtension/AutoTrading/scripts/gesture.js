@@ -1,9 +1,9 @@
 /**
  * 监听元素
  * @param phase 阶段
- * @param container 元素或promise
- * @param targetMethod 目标元素获取方法
- * @param callback 回调函数
+ * @param container 元素或promise或方法
+ * @param targetMethod 目标元素获取方法 param: container
+ * @param callback 回调函数 param: target
  * @returns promise | callback's promise
  */
 async function process(phase, container, targetMethod, callback) {
@@ -12,12 +12,19 @@ async function process(phase, container, targetMethod, callback) {
         await container.then(result => element = result);
     } else if (container.nodeType) {
         element = container;
+    } else if (typeof container === 'function') {
+        element = container();
     } else {
+        console.error("Error element: " + phase);
+        return;
+    }
+    if (!element) {
         console.error("Error element: " + phase);
         return;
     }
     let targetElement = targetMethod(element);
     if (targetElement) {
+        console.info("Found: " + phase);
         if (callback) {
             let result = callback(targetElement);
             if (Promise.prototype.isPrototypeOf(result)) {
@@ -27,11 +34,14 @@ async function process(phase, container, targetMethod, callback) {
         return new Promise((resolve, reject) => {
             resolve(targetElement);
         });
+    } else {
+        console.warn("Not Found: " + phase);
     }
     return new Promise((resolve, reject) => {
         let observer = new MutationObserver((mutationList, observer) => {
             targetElement = targetMethod(element);
             if (targetElement) {
+                console.info("Found: " + phase);
                 if (callback) {
                     let result = callback(targetElement);
                     if (Promise.prototype.isPrototypeOf(result)) {
@@ -73,104 +83,39 @@ class FullGesture extends Gesture {
             this.lossRate = -90;
         }
     }
-    async apply() {
-        if (!flag) {
-            pause("Pause");
-            return;
-        }
-        //Step 1 ======================================================================
-        let sliderList = document.querySelectorAll('[class^="InputSlider_nodeText"]');
-        if (sliderList.length != 10) {
-            pause("FullGesture: Step 1");
-            return;
-        }
-        let el_slider = sliderList[4];
-        this.click(el_slider);
-        //Step 1 end ==================================================================
+    apply() {
+        let inputPanel; //输入面板
+        let dialogPanel; //止盈止损对话框
+        let optionPanel; //止损选项框
+        process("1. 查询输入面板", document, container => container.getElementById("leftPoForm"), target => inputPanel = target)
+            .then(el => process("2. 选中数量", inputPanel, container => container.querySelectorAll('span[class^="InputSlider_nodeText"]')[4], target => target.click()))
+            .then(el => process("3. 点击止盈止损", inputPanel, container => container.querySelector('input[class="okui-checkbox-input"]'), target => { if (!target.checked) target.click(); }))
+            .then(el => process("4. 点击高级", () => el?.parentElement?.parentElement?.parentElement, container => container.querySelector('div[class^="Entry_operatorIcon"]'), target => target.click()))
+            .then(el => process("5. 检测止盈止损对话框", document, container => dialogPanel = container.getElementById("scroll-box")))
+            .then(el => process("6. 止盈输入", el, container => container.querySelectorAll('div[class="okui-input-box"]')[1]?.querySelector('input[type="text"]'), target => this.input(target, this.profitRate)))
+            .then(el => process("7. 选择止损收益率", dialogPanel, container => container.querySelectorAll('div[class="okui-input-box"]')[3]?.querySelector('i'), target => target.click()))
+            .then(el => process("8. 检测止损对话框", document, container => optionPanel = container.querySelectorAll("#scroll-box")[1]))
+            .then(el => process("9. 点击止损收益率", el, container => {
+                let span = container.querySelectorAll('span')[1];
+                if (span && span.textContent === '收益率 (%)') {
+                    return span;
+                } else {
+                    return undefined;
+                }
+            }, target => target.click()))
+            .then(el => process("10. 点击确定", optionPanel, container => container.nextElementSibling?.querySelector('button[data-testid="okd-dialog-confirm-btn"]'), target => target.click()))
+            .then(el => process("11. 等待设置成功", dialogPanel, container => {
+                let span = container.querySelectorAll('div[class="okui-input-box"]')[3]?.querySelector('span[class^="index_textContainer"]');
+                if (span && span.textContent === '收益率') {
+                    return span;
+                } else {
+                    return undefined;
+                }
+            }))
+            .then(el => process("12. 止盈输入", dialogPanel, container => container.querySelectorAll('div[class="okui-input-box"]')[3]?.querySelector('input[type="text"]'), target => this.input(target, this.lossRate)))
+            .then(el => process("13. 点击确定", dialogPanel, container => container.nextElementSibling?.querySelector('button[data-testid="okd-dialog-confirm-btn"]'), target => target.click()))
+            .then(el => process("14. 执行开多", inputPanel, container => container.querySelector('div[class="submit-btn-box"] span'), target => target.click()));
 
-        //Step 2 ======================================================================
-        let checkBoxList = document.querySelectorAll('[class="okui-checkbox-input"]');
-        if (checkBoxList.length != 3) {
-            pause("FullGesture: Step 2");
-            return;
-        }
-        let el_checkbox = checkBoxList[1];
-        if (!el_checkbox.checked) {
-            this.click(el_checkbox);
-            await sleep(SLEEP_SHORT);
-        }
-        //Step 2 end ==================================================================
-
-        //Step 3 ======================================================================
-        let advanceList = document.querySelectorAll('[class^="Entry_operatorIcon"]');
-        if (advanceList.length < 1) {
-            pause("FullGesture: Step 3");
-            return;
-        }
-        let el_advance = advanceList[0];
-        if (el_advance.textContent !== '高级') {
-            pause("FullGesture: Step 3.1");
-            return;
-        }
-        this.click(el_advance);
-        await sleep(SLEEP_SHORT);
-        //Step 3 end ==================================================================
-
-        //Step 4 ======================================================================
-        let optionList = document.querySelectorAll('#scroll-box [class^="index_textContainer"]');
-        if (optionList.length != 3) {
-            pause("FullGesture: Step 4");
-            return;
-        }
-        let el_option = optionList[2];
-        if (el_option.textContent !== '收益率') {
-            this.click(el_option);
-            await sleep(SLEEP_SHORT);
-            let itemList = document.querySelectorAll('[class^="index_itemContainer"]');
-            if (itemList.length != 3) {
-                pause("FullGesture: Step 4.1");
-                return;
-            }
-            let el_item = itemList[1];
-            if (el_item.querySelectorAll("div span")[0]?.textContent !== '收益率 (%)') {
-                pause("FullGesture: Step 4.2");
-                return;
-            }
-            this.click(el_item);
-            await sleep(SLEEP_SHORT);
-            let confirmList = document.querySelectorAll('[class="okui-btn btn-sm btn-fill-highlight dialog-btn double-btn"]');
-            if (confirmList.length != 2) {
-                pause("FullGesture: Step 4.3");
-                return;
-            }
-            let el_confirm = confirmList[1];
-            this.click(el_confirm);
-            await sleep(SLEEP_SHORT);
-        }
-        //Step 4 end ==================================================================
-
-        //Step 5 ======================================================================
-        let inputList = document.querySelectorAll('[class^="okui-input-input index_input"]');
-        if (inputList.length != 4) {
-            pause("FullGesture: Step 5");
-            return;
-        }
-        let el_profit = inputList[1];
-        let el_loss = inputList[3];
-        this.input(el_profit, this.profitRate);
-        this.input(el_loss, this.lossRate);
-        await sleep(SLEEP_SHORT);
-        //Step 5 end ==================================================================
-
-        //Step 6 ======================================================================
-        let confirmList = document.querySelectorAll('[class="okui-btn btn-sm btn-fill-highlight dialog-btn double-btn"]');
-        if (confirmList.length != 1) {
-            pause("FullGesture: Step 6");
-            return;
-        }
-        let el_confirm = confirmList[0];
-        this.click(el_confirm);
-        //Step 6 end ==================================================================
     }
 }
 
