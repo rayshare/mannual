@@ -20,7 +20,7 @@
                 "*://www.okx.com/*/trade-swap/doge-usdt-swap"
             ],
             "run_at": "document_idle",
-            "world": "MAIN",
+            "world": "ISOLATED",
             "type": "module"
         }
     ]
