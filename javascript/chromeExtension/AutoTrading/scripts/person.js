@@ -2,17 +2,20 @@
  * class ProxyWebSocket extends window.WebSocket 代理websocket
  * 使用dom更简单
  */
-class Private {
-    constructor(el_private) {
+class Person {
+    constructor(el_person) {
         this.listeners = [];
+        this.el_person = el_person;
         this.h1 = [];
         this.h2 = [];
         this.h3 = [];
         this.h4 = [];
         this.h5 = [];
+    }
 
-        const private_Observe = new MutationObserver((e) => {
-            let data = el_private();
+    extraObserve() {
+        const person_Observe = new MutationObserver((e) => {
+            let data = this.el_person();
             let maxLength = 100;
             this.push(this.h1, data[0], maxLength);
             this.push(this.h2, data[1], maxLength);
@@ -23,8 +26,8 @@ class Private {
                 listener.data(data);
             }
         });
-        private_Observe.observe(el_private.prototype.element, { childList: true, subtree: true, characterData: true });
-        console.log("private listening");
+        person_Observe.observe(this.el_person.prototype.element, { childList: true, subtree: true, characterData: true });
+        console.log("person listening");
     }
 
     push(arr, value, maxLength) {

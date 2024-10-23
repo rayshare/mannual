@@ -12,7 +12,7 @@
                 "scripts/base.js",
                 "scripts/data.js",
                 "scripts/gesture.js",
-                "scripts/private.js",
+                "scripts/person.js",
                 "scripts/strategyV1.js",
                 "scripts/main.js"
             ],
