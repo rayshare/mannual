@@ -4,6 +4,15 @@ class Strategy {
         this.person = person;
         this.full = new FullGesture();
         this.empty = new EmptyGesture();
+        this.locked = false;
+    }
+
+    lock() {
+        this.locked = true;
+    }
+
+    unlock() {
+        this.locked = false;
     }
 
     apply(_kd) { //高 开 低 收 涨跌幅 振幅
@@ -26,12 +35,14 @@ class Strategy {
         let testThreshold = expectProfitRate * scale / multiply; //检测阈值
 
         if (threshold >= testThreshold) {
-            if (sub > 0) {
+            if (sub > 0 && !this.locked) {
+                this.lock();
+                this.empty.apply(this.unlock);
                 console.log("开空: " + threshold);
-                this.empty.apply();
             } else {
+                this.lock();
+                this.full.apply(this.unlock);
                 console.log("开多: " + threshold);
-                this.full.apply();
             }
         }
     }
