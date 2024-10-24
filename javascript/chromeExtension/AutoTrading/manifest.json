@@ -6,15 +6,27 @@
     "action": {
         "default_popup": "page/config.html"
     },
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "scripts/backgrounds/main.js",
+        "type": "module",
+        "matches": [
+            "*://www.okx.com/*/trade-swap/doge-usdt-swap"
+        ]
+    },
     "content_scripts": [
         {
             "js": [
-                "scripts/base.js",
-                "scripts/data.js",
-                "scripts/gesture.js",
-                "scripts/person.js",
-                "scripts/strategyV1.js",
-                "scripts/main.js"
+                "scripts/contents/base.js",
+                "scripts/contents/data.js",
+                "scripts/contents/gesture.js",
+                "scripts/contents/person.js",
+                "scripts/contents/strategyV1.js",
+                "scripts/contents/main.js"
             ],
             "matches": [
                 "*://www.okx.com/*/trade-swap/doge-usdt-swap"

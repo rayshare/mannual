@@ -1,7 +1,44 @@
 <html>
+<script src="./js/main.js"></script>
+<style>
+    #toggle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        color: white;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        line-height: 150px;
+    }
+
+    .off {
+        background-color: red;
+    }
+
+    .on {
+        background-color: green;
+    }
+
+    .disable {
+        background-color: gray;
+    }
+
+    .on:hover {
+        box-shadow: 0 0 10px red;
+    }
+
+    .off:hover {
+        box-shadow: 0 0 10px green;
+    }
+</style>
 
 <body>
-    <h1>AutoTrading</h1>
+    <div>
+        <button class="off" id="toggle"></button>
+    </div>
 </body>
 
 </html>
