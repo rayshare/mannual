@@ -38,12 +38,12 @@ class Strategy {
             if (sub > 0) {
                 if (this.locked) return;
                 this.lock();
-                this.empty.apply(this.unlock);
+                this.empty.apply(() => this.unlock());
                 console.log("开空: " + threshold);
             } else {
                 if (this.locked) return;
                 this.lock();
-                this.full.apply(this.unlock);
+                this.full.apply(() => this.unlock());
                 console.log("开多: " + threshold);
             }
         }
