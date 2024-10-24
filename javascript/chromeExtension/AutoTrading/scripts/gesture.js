@@ -82,7 +82,7 @@ class Gesture {
 }
 
 class FullGesture extends Gesture {
-    apply() {
+    apply(final) {
         let inputPanel; //输入面板
         let dialogPanel; //止盈止损对话框
         let optionPanel; //止损选项框
@@ -113,12 +113,13 @@ class FullGesture extends Gesture {
             }))
             .then(el => process("12. 止盈输入", dialogPanel, container => container.querySelectorAll('div[class="okui-input-box"]')[3]?.querySelector('input[type="text"]'), target => this.input(target, this.lossRate)))
             .then(el => process("13. 点击确定", dialogPanel, container => container.nextElementSibling?.querySelector('button[data-testid="okd-dialog-confirm-btn"]'), target => target.click()))
-            .then(el => process("14. 执行开多", inputPanel, container => container.querySelector('div[class="submit-btn-box"] span'), target => target.click()));
+            .then(el => process("14. 执行开多", inputPanel, container => container.querySelector('div[class="submit-btn-box"] span'), target => target.click()))
+            .then(() => final && final());
     }
 }
 
 class EmptyGesture extends Gesture {
-    apply() {
+    apply(final) {
         let inputPanel; //输入面板
         let dialogPanel; //止盈止损对话框
         let optionPanel; //止损选项框
@@ -149,7 +150,8 @@ class EmptyGesture extends Gesture {
             }))
             .then(el => process("12. 止盈输入", dialogPanel, container => container.querySelectorAll('div[class="okui-input-box"]')[3]?.querySelector('input[type="text"]'), target => this.input(target, this.lossRate)))
             .then(el => process("13. 点击确定", dialogPanel, container => container.nextElementSibling?.querySelector('button[data-testid="okd-dialog-confirm-btn"]'), target => target.click()))
-            .then(el => process("14. 执行开空", inputPanel, container => container.querySelector('div[class="submit-btn-box"] span'), target => target.click()));
+            .then(el => process("14. 执行开空", inputPanel, container => container.querySelector('div[class="submit-btn-box"] span'), target => target.click()))
+            .then(() => final && final());
     }
 }
 
