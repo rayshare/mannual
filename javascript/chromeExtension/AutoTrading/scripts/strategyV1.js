@@ -35,11 +35,13 @@ class Strategy {
         let testThreshold = expectProfitRate * scale / multiply; //检测阈值
 
         if (threshold >= testThreshold) {
-            if (sub > 0 && !this.locked) {
+            if (sub > 0) {
+                if (this.locked) return;
                 this.lock();
                 this.empty.apply(this.unlock);
                 console.log("开空: " + threshold);
             } else {
+                if (this.locked) return;
                 this.lock();
                 this.full.apply(this.unlock);
                 console.log("开多: " + threshold);
