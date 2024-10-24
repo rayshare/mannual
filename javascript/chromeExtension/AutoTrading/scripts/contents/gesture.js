@@ -15,11 +15,11 @@ async function process(phase, container, targetMethod, callback) {
     } else if (typeof container === 'function') {
         element = container();
     } else {
-        console.error("Error element: " + phase);
+        console.info("Error element: " + phase);
         return;
     }
     if (!element) {
-        console.error("Error element: " + phase);
+        console.info("Error element: " + phase);
         return;
     }
     let targetElement = targetMethod(element);
@@ -35,7 +35,7 @@ async function process(phase, container, targetMethod, callback) {
             resolve(targetElement);
         });
     } else {
-        console.warn("Not Found: " + phase);
+        console.info("Not Found: " + phase);
     }
     return new Promise((resolve, reject) => {
         let observer = new MutationObserver((mutationList, observer) => {
@@ -53,7 +53,7 @@ async function process(phase, container, targetMethod, callback) {
                 observer.disconnect();
                 resolve(targetElement);
             } else {
-                console.warn("Not Found: " + phase);
+                console.info("Not Found: " + phase);
             }
         });
         observer.observe(element, { childList: true, attributes: true, subtree: true });

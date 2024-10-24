@@ -11,13 +11,6 @@
         "activeTab",
         "storage"
     ],
-    "background": {
-        "service_worker": "scripts/backgrounds/main.js",
-        "type": "module",
-        "matches": [
-            "*://www.okx.com/*/trade-swap/doge-usdt-swap"
-        ]
-    },
     "content_scripts": [
         {
             "js": [
@@ -26,7 +19,7 @@
                 "scripts/contents/gesture.js",
                 "scripts/contents/person.js",
                 "scripts/contents/strategyV1.js",
-                "scripts/contents/main.js"
+                "scripts/contents/content.js"
             ],
             "matches": [
                 "*://www.okx.com/*/trade-swap/doge-usdt-swap"

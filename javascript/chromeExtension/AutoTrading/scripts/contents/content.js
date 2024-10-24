@@ -55,13 +55,19 @@ function stop() {
     isStarted = false;
 }
 
+//设置storage的href
+chrome.storage.local.set({ href: window.location.href });
+
+//监听pop消息
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'popupMessage') {
-        console.log('Message from popup:', message.data);
+    if (message.action === 'CONTENT') {
+        console.log('Message from popup:', message);
+        alert(JSON.stringify(message));
 
         // 响应 popup 消息
         sendResponse(true);
     }
+    return true;
 });
 
 
